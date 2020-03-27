@@ -1,3 +1,5 @@
+# testing unlimited duration recorder
+
 import argparse
 import tempfile
 import queue
@@ -5,8 +7,10 @@ import sys
 
 import sounddevice as sd
 import soundfile as sf
-import numpy # Make sure NumPy is loaded before it is used in the callback
-assert numpy # avoid "imported but unused" message (W0611)
+import numpy  # Make sure NumPy is loaded before it is used in the callback
+
+assert numpy  # avoid "imported but unused" message (W0611)
+
 
 def int_or_str(text):
     """Helper function for argument parsing."""
@@ -14,6 +18,8 @@ def int_or_str(text):
         return int(text)
     except ValueError:
         return text
+
+
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument(
     '-l', '--list-devices', action='store_true',
@@ -42,6 +48,7 @@ args = parser.parse_args(remaining)
 
 q = queue.Queue()
 
+
 def callback(indata, frames, time, status):
     """This is called (from a separate thread) for each audio block."""
     if status:
@@ -59,7 +66,7 @@ try:
                                         suffix='.wav', dir='')
     # Make sure the file is opened before recording anything:
     with sf.SoundFile(args.filename, mode='x', samplerate=args.samplerate,
-                    channels=args.channels, subtype=args.subtype) as file:
+                      channels=args.channels, subtype=args.subtype) as file:
         with sd.InputStream(samplerate=args.samplerate, device=args.device,
                             channels=args.channels, callback=callback):
             print('#' * 80)
